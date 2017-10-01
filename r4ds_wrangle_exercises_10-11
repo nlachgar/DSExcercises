@@ -1,0 +1,94 @@
+# R4DS Excercises Ch.9-11
+## Nabil Lachgar
+
+# Problem 10.5.1
+
+# 1. You use the class() function:
+    * class(mtcars)
+    *class(as_tibble(mtcars))
+    
+# 2. 
+  Data Frame:
+    df <- data.frame(abc = 1, xyz = "a")
+    df$x - still returns value of "a"
+    df[, "xyz"] - makes "a" into a factor with different levels
+    df[, c("abc", "xyz")] - gives us 2 columns
+    
+ Tibble:
+    tf <- tibble(abc = 1, xyz = "a")
+    tf$x - error (non-existant column)
+    tf[, "xyz"] - stays as a character
+    tf[, c("abc", "xyz")] - gives us 2 columns and gives us data type
+    
+#3. Extracting variable from tibble
+    var <- "mpg"
+    cartbl <- as_tibble(mtcars)
+    cartbl[var]
+
+#4. 
+    annoying <- tibble(
+     `1` = 1:10,
+     `2` = `1` * 2 + rnorm(length(`1`)))
+      * 1) annoying ['1']
+      * 2) ggplot(annoying, aes(x='1', y='2')) + geom_point()
+      * 3) annoying$'3' <- annoying$'2'/annoying$'1'
+      * 4) colnames(annoying) <- c('one', 'two', 'three')
+      
+ #5.
+    ?tibble::enframe()
+     * converts tibble vector to a 2 column data frame
+     * Might use this when data is presented as a vector but a DF needs to be manipulated 
+     
+ #6. tibble.max_extra_cols
+
+
+# Problem 11.2.2
+
+ #1. read_delim
+    i.e.) read_delim("a|b|c\n4|5|6", '|', col_names = c("x", "y", "z"))
+
+ #2. col_names, col_types, locale, na
+ 
+ #3. read_fwf()
+    * file and col_positions are important because they need to be defined, while other variables have pre-set default values
+
+ #4. read_delim("x,y\n1,'a,b'", quote = "'")
+
+ #5.
+   *read_csv("a,b\n1,2,3\n4,5,6") - We only see 2 columns since that's what the first row has 
+   *read_csv("a,b,c\n1,2\n1,2,3,4") - We get an na value in col. 3 of row 2 since it's only 2 columns
+   *read_csv("a,b\n\"1") - Second row has no value for col.2 wo we get na
+   *read_csv("a,b\n1,2\na,b") - correct
+   *read_csv("a;b\n1;3") - we can't use a read_csf when the files are delimited by semicolons. Should use "read_delim"
+   
+# Problem 11.3.5
+
+ #1. date_names, date_format, time_format, tz, decimal_mark, grouping_mark, encoding
+ #2. 
+    * locale(decimal_mark = ".", grouping_mark = ".") -Error: `decimal_mark` and `grouping_mark` must be different
+    * locale(decimal_mark = ",") - if decimal_mark is set to ",", grouping_mark is set to "."
+    * locale(grouping_mark = ",") - if grouping_mark is set to ",", decimal_mark is set to "."
+
+#3. date_format and time_format set date and time formatting
+      ex) parse_date('1 janvier 2015 01:23',locale = locale(date_format='%m/%d/%Y', time_format = '%H:%M'))
+      * time_format doesn't do anything but date_format guesses column type
+
+#4. locale()
+
+#5. Delimiter - read_csv() uses "," while read_csv2() uses ";"
+
+#6. UTF-8 is standard now, and ASCII has been around forever.
+    Europe: separate encodings for Romance languages and Eastern European languages using Latin script, Cyrillic, Greek, Hebrew, etc..
+    Asia: 
+      Arabic & Vietnamese: ISO and Windows standards
+      Others: Japanese (JIS X 0208, Shift JIS, ISO-2022-JP)
+              Chinese (GB 2312, GBK, GB 18030)
+              
+#7: 
+    * d1 <- parse_date("January 1, 2010", "%B %d, %Y")
+    * d2 <- parse_date("2015-Mar-07", "%Y-%b-%d")
+    * d3 <- parse_date("06-Jun-2017","%d-%b-%Y")
+    * d4 <- parse_date(c("August 19 (2015)", "July 1 (2015)"),"%B %d (%Y)")
+    * d5 <- parse_date("12/30/14","%m/%d/%y") # Dec 30, 2014
+    * t1 <- parse_time("1705", "%H%M")
+    * t2 <- parse_time("11:15:10.12 PM", "%I:%M:%OS %p")
