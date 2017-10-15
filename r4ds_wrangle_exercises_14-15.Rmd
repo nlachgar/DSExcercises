@@ -1,0 +1,185 @@
+---
+title: "r4ds_wrangle_excercises_14-15"
+author: "Nabil Lachgar"
+date: "October 15, 2017"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Chapter 14 Problems
+
+# 14.2.5
+
+# 1: 
+  * paste() has no default separator
+  * These functions are equal to str_c
+  * paste functions combine NA and strings into an aggregate string, while stringr overwrites it. 
+  
+# 2: 
+  * sep can be used to combine strings passed to str_c or to combine strings across vectors
+  * collapse can be used to combine strings within a vector
+
+# 3:
+
+  * x<- "abcde"
+  * len <- str_length(x)
+  * str_sub(x, len/2+1, len/2+1)
+  * Even string length causes the function to select the character at length position
+  
+# 4:
+  * ?str_wrap 
+  * output <- "str_wrap is good for formatting strings into human readable scentences & paragraphs and adjusting things like width/indenting. You may want to use it when outputting long text strings into the consolse."
+  *cat(str_wrap(output, width = 30), "\n")
+  
+# 5:
+  * str_trim trims whitespace from the beginning and end of a string
+  * str_pad adds whitespace to the beginning and end of a string
+  
+# 6:
+  * Function to deal with comma-separated strings
+  * x <- c("a","b","c","d")
+    oxfordComma(x)
+    
+  
+str_trim will trim whitespace from the beginning/end of a string
+str_pad will add whitespace to beginning/end
+
+
+## Problem 14.3.1.1 
+
+# 1:
+  "\" used as escape with nothing folling it
+  "\\" used to escape into single "/"
+  "\\\" used to escape into single "\" but nothing after
+
+# 2:
+  * str_view("\"'\\","\"'\\\\")
+  
+# 3:
+  * str_view(".x.y.z", "\\..\\..\\.." )
+
+
+
+## Problem 14.3.2.1
+
+# 1: str_view("$^$", "\\$\\^\\$")
+
+# 2: 
+  * str_view(stringr::words, "^y", match = TRUE)
+  * str_view(stringr::words, "x$", match = TRUE)
+  * str_view(stringr::words, "^...$", match = TRUE)
+  * str_view(stringr::words, "^.......", match = TRUE)
+
+
+## Problem 14.3.3.1\
+
+# 1:   
+  * str_view(stringr::words, "^[aeiou]", match = TRUE)
+  * str_view(stringr::words, "^[^aeiou]+$", match = TRUE)
+  * str_view(stringr::words, "[^e]ed$" , match = TRUE)
+  * str_view(stringr::words, "(ing|ise)$" , match = TRUE)
+
+# 2: str_view(stringr::words, "[^c]ie" , match = TRUE)
+
+# 3: str_view(stringr::words, "q[^u]", match = TRUE)
+
+# 4: Have to know that British Engilsh uses -our instead of -or
+  * str_view(stringr::words, "our", match = TRUE)
+
+# 5: str_view("828-275-4007", "\\d\\d\\d-\\d\\d\\d-\\d\\d\\d\\d", match = TRUE)
+
+
+## Problem 14.4.2  
+ 
+# 1:
+
+_1_ str_view(stringr::words, "(^x)|(x$)", match = TRUE)
+
+  * word1 <- data.frame(words)
+  * word1$endx <- str_detect(words, "x$")
+  * word1$startx <- str_detect(words, "^x")
+  * word1 %>% 
+  * filter(endx == TRUE | startx == TRUE)
+
+_2_ str_view(stringr::words, "^[aeiou].*[^aeiou]$", match = TRUE)
+
+  * word2 <- data.frame(words)
+  * word2$startVowel <- str_detect(words, "^[aeiou]")
+  * word2$endCons <- str_detect(words, "[^aeiou]$")
+  * word2 %>% 
+  * filter(startVowel == TRUE & endCons == TRUE)
+
+# 2 :
+
+ * "appropriate", "associate", "available", "colleague", "encourage", "experience", "individual", "television" have 5 vowels 
+  * "a" has the highest vowel pct (100%)
+
+## Problem 14.4.6.1
+
+# 1:
+  * "apples, pears, bananas" %>%
+  * str_replace("and","") %>%
+  * str_split(",")
+  
+# 2: When a string has several spaces, str_split("") brings in blanks as strings
+
+# 3: str_split("test string","")
+
+
+### Chapter 15 Problems
+
+## Problem 15.4.1
+
+# 1: 
+  * 41 values for tvhour > 18hrs
+  * Exclude outliers 
+  * gss_cat %>%
+      select(tvhours) %>%
+      filter(tvhours > 18) %>%
+      count()
+      
+# 2:
+    * Year: principled  
+    * Marital: arbitrary  
+    * Age: principled  
+    * Race: arbitrary  
+    * rincome: principled  
+    * partyid: arbitrary  
+    * relig: arbitrary  
+    * denom: arbitrary  
+    * tvhours: principled
+
+# 3: Front levels are plotted as bottom values
+
+
+## Problem 15.5.1
+
+# 1: Flat trends over time and small trend of independents. 
+ 
+* df <- gss_cat %>%
+  mutate(partyid = fct_collapse(partyid,
+    other = c("No answer", "Don't know", "Other party"),
+    rep = c("Strong republican", "Not str republican"),
+    ind = c("Ind,near rep", "Independent", "Ind,near dem"),
+    dem = c("Not str democrat", "Strong democrat"))
+
+* df %>% 
+  ggplot(aes(x = year, group = partyid, fill = partyid)) + 
+  geom_bar(position = "fill")  
+
+# 2: We can separate rincome into subgroups
+
+  * gss_cat %>%
+      mutate(rincome = fct_collapse(rincome,
+        unkown = c("No answer", "Don't know", "Refused", "Not applicable"),
+        ZeroTo5K = c("Lt $1000", "$1000 to 2999", "$3000 to 3999", "$4000 to 4999"),
+        FiveKto10K = c("$5000 to 5999", "$6000 to 6999", "$7000 to 7999", "$8000 to 9999"),
+        TenKOrMore = c("$10000 - 14999", "$15000 - 19999", "$20000 - 24999", "$25000 or more")))
+  
+  
+  
+  
+  
